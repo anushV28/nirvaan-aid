@@ -155,3 +155,26 @@
     color: var(--color-foreground);
   }
 }
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Leaflet container must fill its parent and sit below app chrome */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: var(--surface);
+  font-family: var(--font-sans);
+  z-index: 0;
+}
+.nirvaan-pin {
+  background: transparent;
+  border: none;
+}
