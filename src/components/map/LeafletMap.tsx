@@ -7,23 +7,25 @@ export type MapPin = {
   lat: number;
   lng: number;
   kind: "request" | "volunteer" | "group" | "ngo";
-  color?: string;
-  badge?: string;
-  title?: string;
-  pulsing?: boolean;
-  onClick?: () => void;
+  color?: string | undefined;
+  badge?: string | undefined;
+  title?: string | undefined;
+  pulsing?: boolean | undefined;
+  onClick?: (() => void) | undefined;
 };
 
 export type MapLine = { id: string; from: [number, number]; to: [number, number] };
 
 export type LeafletMapProps = {
   center: [number, number];
-  zoom?: number;
-  pins?: MapPin[];
-  lines?: MapLine[];
-  draggable?: { lat: number; lng: number; onChange: (lat: number, lng: number) => void };
-  recenterTo?: [number, number] | null;
-  className?: string;
+  zoom?: number | undefined;
+  pins?: MapPin[] | undefined;
+  lines?: MapLine[] | undefined;
+  draggable?:
+    | { lat: number; lng: number; onChange: (lat: number, lng: number) => void }
+    | undefined;
+  recenterTo?: [number, number] | null | undefined;
+  className?: string | undefined;
 };
 
 function pinHtml(pin: MapPin) {

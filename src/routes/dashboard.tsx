@@ -12,7 +12,6 @@ import { useLiveData } from "@/hooks/useLiveData";
 import { supabase } from "@/integrations/supabase/client";
 import {
   URGENCY_COLOR,
-  URGENCY_ORDER,
   VADODARA,
   distanceKm,
   formatDistance,
