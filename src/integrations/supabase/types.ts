@@ -14,13 +14,200 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admins: {
+        Row: {
+          id: string
+          name: string
+        }
+        Insert: {
+          id: string
+          name?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      assignments: {
+        Row: {
+          assigned_at: string
+          id: string
+          request_id: string
+          resolved_at: string | null
+          responder_id: string
+          responder_type: string
+        }
+        Insert: {
+          assigned_at?: string
+          id?: string
+          request_id: string
+          resolved_at?: string | null
+          responder_id: string
+          responder_type: string
+        }
+        Update: {
+          assigned_at?: string
+          id?: string
+          request_id?: string
+          resolved_at?: string | null
+          responder_id?: string
+          responder_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          approval_status: string
+          area_of_operation: string | null
+          contact_person: string
+          contact_phone: string
+          created_at: string
+          email: string
+          id: string
+          location_lat: number
+          location_lng: number
+          org_name: string
+          registration_number: string | null
+          resources_available: string | null
+        }
+        Insert: {
+          approval_status?: string
+          area_of_operation?: string | null
+          contact_person: string
+          contact_phone: string
+          created_at?: string
+          email: string
+          id?: string
+          location_lat: number
+          location_lng: number
+          org_name: string
+          registration_number?: string | null
+          resources_available?: string | null
+        }
+        Update: {
+          approval_status?: string
+          area_of_operation?: string | null
+          contact_person?: string
+          contact_phone?: string
+          created_at?: string
+          email?: string
+          id?: string
+          location_lat?: number
+          location_lng?: number
+          org_name?: string
+          registration_number?: string | null
+          resources_available?: string | null
+        }
+        Relationships: []
+      }
+      requests: {
+        Row: {
+          assigned_responder_id: string | null
+          assigned_responder_type: string | null
+          category: string
+          created_at: string
+          description: string
+          id: string
+          landmark: string | null
+          location_lat: number
+          location_lng: number
+          relationship: string
+          reporter_name: string
+          reporter_phone: string
+          status: string
+          updated_at: string
+          urgency: string
+        }
+        Insert: {
+          assigned_responder_id?: string | null
+          assigned_responder_type?: string | null
+          category?: string
+          created_at?: string
+          description: string
+          id?: string
+          landmark?: string | null
+          location_lat: number
+          location_lng: number
+          relationship?: string
+          reporter_name: string
+          reporter_phone: string
+          status?: string
+          updated_at?: string
+          urgency?: string
+        }
+        Update: {
+          assigned_responder_id?: string | null
+          assigned_responder_type?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          landmark?: string | null
+          location_lat?: number
+          location_lng?: number
+          relationship?: string
+          reporter_name?: string
+          reporter_phone?: string
+          status?: string
+          updated_at?: string
+          urgency?: string
+        }
+        Relationships: []
+      }
+      volunteers: {
+        Row: {
+          contact_phone: string
+          id: string
+          last_active: string
+          location_lat: number
+          location_lng: number
+          member_count: number | null
+          name: string
+          signup_type: string
+          skills: string[]
+          status: string
+        }
+        Insert: {
+          contact_phone: string
+          id?: string
+          last_active?: string
+          location_lat: number
+          location_lng: number
+          member_count?: number | null
+          name: string
+          signup_type?: string
+          skills?: string[]
+          status?: string
+        }
+        Update: {
+          contact_phone?: string
+          id?: string
+          last_active?: string
+          location_lat?: number
+          location_lng?: number
+          member_count?: number | null
+          name?: string
+          signup_type?: string
+          skills?: string[]
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
