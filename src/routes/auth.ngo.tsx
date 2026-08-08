@@ -96,7 +96,9 @@ function NgoAuth() {
         contact_phone: form.phone.trim(),
         location_lat: lat,
         location_lng: lng,
-        status: "pending_approval",
+        approval_status: "pending_approval",
+        email: form.email.trim(),
+        contact_person: form.orgName.trim(),
       });
       if (profileError) throw profileError;
       setPending(true);

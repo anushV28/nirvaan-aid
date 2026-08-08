@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 import { Header } from "@/components/Header";
+import type { Organization } from "@/lib/nirvaan";
 import { useLiveData } from "@/hooks/useLiveData";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,7 +33,7 @@ function Admin() {
 
   const decide = async (id: string, status: "approved" | "rejected") => {
     setBusy(true);
-    const { error } = await supabase.from("organizations").update({ status }).eq("id", id);
+    const { error } = await supabase.from("organizations").update({ approval_status: status }).eq("id", id);
     if (error) toast.error(error.message);
     else toast.success(status === "approved" ? t("admin.approve") : t("admin.reject"));
     setBusy(false);
@@ -51,7 +52,7 @@ function Admin() {
               {t("admin.empty")}
             </li>
           ) : null}
-          {pendingOrganizations.map((org) => (
+          {pendingOrganizations.map((org: Organization) => (
             <li
               key={org.id}
               className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-4"
