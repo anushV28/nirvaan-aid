@@ -7,7 +7,7 @@ export const LANGUAGE_STORAGE_KEY = "nirvaan.lang";
 
 if (!i18n.isInitialized) {
   void i18n.use(initReactI18next).init({
-    resources: resources as unknown as Record<string, Record<string, unknown>>,
+    resources: resources as never,
     lng: "en",
     fallbackLng: "en",
     interpolation: { escapeValue: false },
