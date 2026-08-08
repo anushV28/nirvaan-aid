@@ -72,7 +72,7 @@ function Recenter({ to }: { to: [number, number] | null | undefined }) {
   return null;
 }
 
-function ClickCapture({ onPick }: { onPick?: (lat: number, lng: number) => void }) {
+function ClickCapture({ onPick }: { onPick?: ((lat: number, lng: number) => void) | undefined }) {
   const map = useMap();
   useEffect(() => {
     if (!onPick) return;
@@ -114,7 +114,7 @@ export default function LeafletMap({
             position={[pin.lat, pin.lng]}
             icon={icon}
             title={pin.title}
-            eventHandlers={pin.onClick ? { click: pin.onClick } : undefined}
+            {...(pin.onClick ? { eventHandlers: { click: pin.onClick } } : {})}
           />
         ))}
         {lines.map((line) => (

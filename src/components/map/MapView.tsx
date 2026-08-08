@@ -4,7 +4,7 @@ import type { LeafletMapProps } from "./LeafletMap";
 
 const LeafletMap = lazy(() => import("./LeafletMap"));
 
-function MapSkeleton({ className }: { className?: string }) {
+function MapSkeleton({ className }: { className?: string | undefined }) {
   return (
     <div
       className={`${className ?? "h-full w-full"} animate-pulse bg-muted`}
