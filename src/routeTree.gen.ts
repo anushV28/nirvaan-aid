@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as RequestRouteImport } from './routes/request'
+import { Route as AuthVolunteerRouteImport } from './routes/auth.volunteer'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const RequestRoute = RequestRouteImport.update({
   path: '/request',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthVolunteerRoute = AuthVolunteerRouteImport.update({
+  id: '/auth/volunteer',
+  path: '/auth/volunteer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/feed': typeof FeedRoute
   '/request': typeof RequestRoute
+  '/auth/volunteer': typeof AuthVolunteerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/feed': typeof FeedRoute
   '/request': typeof RequestRoute
+  '/auth/volunteer': typeof AuthVolunteerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/feed': typeof FeedRoute
   '/request': typeof RequestRoute
+  '/auth/volunteer': typeof AuthVolunteerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/feed' | '/request'
+  fullPaths: '/' | '/dashboard' | '/feed' | '/request' | '/auth/volunteer'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/feed' | '/request'
-  id: '__root__' | '/' | '/dashboard' | '/feed' | '/request'
+  to: '/' | '/dashboard' | '/feed' | '/request' | '/auth/volunteer'
+  id: '__root__' | '/' | '/dashboard' | '/feed' | '/request' | '/auth/volunteer'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   FeedRoute: typeof FeedRoute
   RequestRoute: typeof RequestRoute
+  AuthVolunteerRoute: typeof AuthVolunteerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RequestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/volunteer': {
+      id: '/auth/volunteer'
+      path: '/auth/volunteer'
+      fullPath: '/auth/volunteer'
+      preLoaderRoute: typeof AuthVolunteerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   FeedRoute: FeedRoute,
   RequestRoute: RequestRoute,
+  AuthVolunteerRoute: AuthVolunteerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
