@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 import { Header } from "@/components/Header";
+import { RequireAuth } from "@/components/RequireAuth";
 import type { Organization } from "@/lib/nirvaan";
 import { useLiveData } from "@/hooks/useLiveData";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/admin")({
       },
     ],
   }),
-  component: Admin,
+  component: GuardedAdmin,
 });
 
 function Admin() {
@@ -87,5 +88,14 @@ function Admin() {
         </ul>
       </main>
     </div>
+  );
+}
+
+
+function GuardedAdmin() {
+  return (
+    <RequireAuth admin>
+      <Admin />
+    </RequireAuth>
   );
 }

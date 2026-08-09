@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as RequestRouteImport } from './routes/request'
+import { Route as AuthAdminRouteImport } from './routes/auth.admin'
 import { Route as AuthNgoRouteImport } from './routes/auth.ngo'
 import { Route as AuthVolunteerRouteImport } from './routes/auth.volunteer'
 
@@ -42,6 +43,11 @@ const RequestRoute = RequestRouteImport.update({
   path: '/request',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthAdminRoute = AuthAdminRouteImport.update({
+  id: '/auth/admin',
+  path: '/auth/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthNgoRoute = AuthNgoRouteImport.update({
   id: '/auth/ngo',
   path: '/auth/ngo',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/feed': typeof FeedRoute
   '/request': typeof RequestRoute
+  '/auth/admin': typeof AuthAdminRoute
   '/auth/ngo': typeof AuthNgoRoute
   '/auth/volunteer': typeof AuthVolunteerRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/feed': typeof FeedRoute
   '/request': typeof RequestRoute
+  '/auth/admin': typeof AuthAdminRoute
   '/auth/ngo': typeof AuthNgoRoute
   '/auth/volunteer': typeof AuthVolunteerRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/feed': typeof FeedRoute
   '/request': typeof RequestRoute
+  '/auth/admin': typeof AuthAdminRoute
   '/auth/ngo': typeof AuthNgoRoute
   '/auth/volunteer': typeof AuthVolunteerRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/feed'
     | '/request'
+    | '/auth/admin'
     | '/auth/ngo'
     | '/auth/volunteer'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/feed'
     | '/request'
+    | '/auth/admin'
     | '/auth/ngo'
     | '/auth/volunteer'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/feed'
     | '/request'
+    | '/auth/admin'
     | '/auth/ngo'
     | '/auth/volunteer'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   FeedRoute: typeof FeedRoute
   RequestRoute: typeof RequestRoute
+  AuthAdminRoute: typeof AuthAdminRoute
   AuthNgoRoute: typeof AuthNgoRoute
   AuthVolunteerRoute: typeof AuthVolunteerRoute
 }
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RequestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/admin': {
+      id: '/auth/admin'
+      path: '/auth/admin'
+      fullPath: '/auth/admin'
+      preLoaderRoute: typeof AuthAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/ngo': {
       id: '/auth/ngo'
       path: '/auth/ngo'
@@ -181,19 +201,10 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   FeedRoute: FeedRoute,
   RequestRoute: RequestRoute,
+  AuthAdminRoute: AuthAdminRoute,
   AuthNgoRoute: AuthNgoRoute,
   AuthVolunteerRoute: AuthVolunteerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
