@@ -8,7 +8,10 @@ import { supabase } from "@/integrations/supabase/client";
 
 export function Header({ variant = "app" }: { variant?: "app" | "public" }) {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+
+  const linkClass =
+    "rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground [&.active]:bg-muted [&.active]:text-foreground";
 
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur">
@@ -22,24 +25,19 @@ export function Header({ variant = "app" }: { variant?: "app" | "public" }) {
 
         {variant === "app" ? (
           <nav className="ml-4 hidden items-center gap-1 text-sm font-medium sm:flex">
-            <Link
-              to="/dashboard"
-              className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground [&.active]:bg-muted [&.active]:text-foreground"
-            >
+            <Link to="/dashboard" className={linkClass}>
               {t("nav.dashboard")}
             </Link>
-            <Link
-              to="/feed"
-              className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground [&.active]:bg-muted [&.active]:text-foreground"
-            >
-              {t("nav.feed")}
-            </Link>
-            <Link
-              to="/admin"
-              className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground [&.active]:bg-muted [&.active]:text-foreground"
-            >
-              {t("nav.admin")}
-            </Link>
+            {user ? (
+              <Link to="/feed" className={linkClass}>
+                {t("nav.feed")}
+              </Link>
+            ) : null}
+            {isAdmin ? (
+              <Link to="/admin" className={linkClass}>
+                {t("nav.admin")}
+              </Link>
+            ) : null}
           </nav>
         ) : null}
 

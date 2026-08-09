@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Header } from "@/components/Header";
+import { RequireAuth } from "@/components/RequireAuth";
 import { useLiveData } from "@/hooks/useLiveData";
 import { URGENCY_COLOR, URGENCY_ORDER, timeAgo } from "@/lib/nirvaan";
 
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/feed")({
       },
     ],
   }),
-  component: Feed,
+  component: GuardedFeed,
 });
 
 const CATEGORIES = ["medical", "food", "shelter", "rescue", "general"] as const;
@@ -166,5 +167,14 @@ function Select({
         ))}
       </select>
     </label>
+  );
+}
+
+
+function GuardedFeed() {
+  return (
+    <RequireAuth>
+      <Feed />
+    </RequireAuth>
   );
 }

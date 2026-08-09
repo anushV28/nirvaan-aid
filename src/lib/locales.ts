@@ -131,6 +131,7 @@ export const resources = {
       },
       admin: {
         title: "Organization approvals",
+        subtitle: "Review relief organizations that applied to coordinate on Nirvaan.",
         pending: "Pending review",
         approve: "Approve",
         reject: "Reject",
@@ -269,6 +270,7 @@ export const resources = {
       },
       admin: {
         title: "संस्था स्वीकृति",
+        subtitle: "निर्वाण पर समन्वय के लिए आवेदन करने वाली संस्थाओं की समीक्षा करें।",
         pending: "समीक्षा लंबित",
         approve: "स्वीकृत करें",
         reject: "अस्वीकार करें",
@@ -407,6 +409,7 @@ export const resources = {
       },
       admin: {
         title: "સંસ્થા મંજૂરી",
+        subtitle: "નિર્વાણ પર સંકલન માટે અરજી કરનારી સંસ્થાઓની સમીક્ષા કરો.",
         pending: "સમીક્ષા બાકી",
         approve: "મંજૂર કરો",
         reject: "નકારો",
