@@ -71,6 +71,7 @@ function Index() {
                 <Siren className="size-5" aria-hidden="true" />
                 {t("nav.requestHelp")}
               </Link>
+              
               <Link
                 to="/auth/volunteer"
                 className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary-foreground/40 px-6 py-4 font-medium transition-colors hover:bg-primary-foreground/10"
@@ -78,6 +79,14 @@ function Index() {
                 <HeartHandshake className="size-5" aria-hidden="true" />
                 {t("nav.volunteer")}
               </Link>
+              <a
+  href="tel:112"
+  aria-label="Call emergency services at 112"
+  className="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-6 py-4 font-display text-lg font-extrabold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-red-700 active:scale-95"
+>
+  <Siren className="size-5" aria-hidden="true" />
+  SOS — CALL 112
+</a>
               <Link
                 to="/auth/ngo"
                 className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary-foreground/40 px-6 py-4 font-medium transition-colors hover:bg-primary-foreground/10"
