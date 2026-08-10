@@ -200,24 +200,19 @@ function RequestPage() {
         <p className="mt-1 text-muted-foreground">{t("form.subtitle")}</p>
 
         {/* EMERGENCY CALL BUTTON */}
-<div className="mt-5 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <p className="font-semibold">Immediate danger?</p>
-      <p className="text-sm text-muted-foreground">
-        For immediate emergency assistance, call 112.
-      </p>
-    </div>
-
-    <a
-      href="tel:112"
-      className="inline-flex items-center justify-center gap-2 rounded-lg bg-destructive px-5 py-3 font-bold text-white transition-opacity hover:opacity-90"
-    >
-      📞 Call 112
-    </a>
-  </div>
+<div className="mt-5 flex justify-center">
+  <a
+    href="tel:112"
+    aria-label="Call emergency services at 112"
+    className="flex h-24 w-24 items-center justify-center rounded-full bg-red-600 text-2xl font-extrabold text-white shadow-lg transition-all hover:scale-105 hover:bg-red-700 active:scale-95"
+  >
+    SOS
+  </a>
 </div>
 
+<p className="mt-2 text-center text-sm text-muted-foreground">
+  Tap SOS to call 112
+</p>
 
         <form onSubmit={submit} className="mt-6 space-y-5">
           <div className="grid gap-4 sm:grid-cols-2">
