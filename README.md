@@ -4,7 +4,7 @@
 
 Nirvaan is a real-time AI coordination platform that connects people trapped, stranded, or in need during floods and disasters with the nearest available volunteers, rescue teams, and relief organizations — turning scattered, manual relief efforts into a single live system, the way ride-hailing apps coordinate drivers and riders, but built for disaster response.
 
-Built for **Mecia Hacks 3.0** by **Team Deploying Hope**, under the Enterprise Software & Cloud Solutions track.
+Built for **Mecia Hacks 3.0** by **Team 404 Not Stranded**, under the Disaster management track.
 
 > ⚠️ If you are in immediate danger, call local emergency services first. Nirvaan supplements — it does not replace — official emergency response.
 
@@ -72,7 +72,7 @@ Nearby volunteers, rescue teams, and NGOs see the request live on a shared map a
 
 ## Team
 
-**Deploying Hope** — built for Mecia Hacks 3.0 (Enterprise Software & Cloud Solutions track)
+**404 Not Stranded** — built for Mecia Hacks 3.0 (Enterprise Software & Cloud Solutions track)
 
 ## License
 
