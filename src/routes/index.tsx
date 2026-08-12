@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowRight, Building2, HeartHandshake, MapPin, Radio, Siren } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { openSos } from "@/lib/sos";
 import "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
@@ -71,6 +72,14 @@ function Index() {
                 <Siren className="size-5" aria-hidden="true" />
                 {t("nav.requestHelp")}
               </Link>
+              <button
+                type="button"
+                onClick={openSos}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-critical px-6 py-4 font-display text-lg font-bold text-primary-foreground shadow-lg transition-transform hover:-translate-y-0.5"
+              >
+                <Siren className="size-5" aria-hidden="true" />
+                {t("sos.title")}
+              </button>
               <Link
                 to="/auth/volunteer"
                 className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary-foreground/40 px-6 py-4 font-medium transition-colors hover:bg-primary-foreground/10"
