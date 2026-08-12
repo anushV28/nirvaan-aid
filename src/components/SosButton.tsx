@@ -118,7 +118,7 @@ export function SosButton() {
       <button
         type="button"
         onClick={openPanel}
-        aria-label={t("sos.button")}
+        aria-label="SOS emergency"
         className="fixed bottom-5 right-5 z-40 grid size-16 place-items-center rounded-full bg-critical text-primary-foreground shadow-xl ring-4 ring-critical/25 transition-transform hover:scale-105 active:scale-95"
       >
         <span className="font-display text-base font-black tracking-tight">SOS</span>
