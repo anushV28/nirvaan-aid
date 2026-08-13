@@ -6,7 +6,7 @@ Nirvaan is an AI-powered disaster and emergency coordination platform that conne
 
 ---
 
-## 🚩 The Problem
+##  The Problem
 
 During floods and disasters, help and need can't find each other:
 
@@ -18,22 +18,22 @@ Gujarat has recurring flood-affected regions almost every monsoon (South Gujarat
 
 ---
 
-## 💡 The Solution
+##  The Solution
 
 Nirvaan lets someone (often a relative or neighbor reporting on behalf of the person in need) submit a request with a pinned location and description. An AI model classifies the request by **category** (medical / food / shelter / rescue) and **urgency** (critical / high / medium / low). The request then appears on a live, real-time map where nearby volunteers, groups, and approved NGOs can view, accept, and update its status — from pending, to assigned, to resolved — visible to everyone in real time.
 
 ### Key Features
-- 📍 Map-based request submission with landmark fallback for when addresses fail
-- 🤖 AI-driven urgency classification from free-text descriptions
-- 🗺️ Live, real-time map dashboard with color-coded urgency pins
-- 👤 Individual and group volunteer signup
-- 🏢 NGO/organization signup with an admin-approval flow
-- 🌐 Multi-language support (English, Hindi, Gujarati)
-- 📋 Filterable request list view as an alternative to the map
+-  Map-based request submission with landmark fallback for when addresses fail
+-  AI-driven urgency classification from free-text descriptions
+-  Live, real-time map dashboard with color-coded urgency pins
+-  Individual and group volunteer signup
+-  NGO/organization signup with an admin-approval flow
+-  Multi-language support (English, Hindi, Gujarati)
+-  Filterable request list view as an alternative to the map
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Tool | Why |
 |---|---|---|
@@ -47,7 +47,7 @@ Nirvaan lets someone (often a relative or neighbor reporting on behalf of the pe
 
 ---
 
-## 🗄️ Database Schema (Supabase/Postgres)
+##  Database Schema (Supabase/Postgres)
 
 - **requests** — reporter info, location, description, category, urgency, status
 - **volunteers** — individual or group signups, skills, location, availability
@@ -59,13 +59,13 @@ Row-level security ensures only authenticated volunteers/NGOs can update their o
 
 ---
 
-## 🔒 Security Notes
+##  Security Notes
 - AI API calls run through a server-side Supabase Edge Function, keeping the API key hidden from the client
 - NGO accounts require manual admin approval rather than automated verification, to avoid false claims of legitimacy
 
 ---
 
-## 🚀 Future Roadmap
+##  Future Roadmap
 - SMS/offline-first fallback for areas with degraded or no network connectivity
 - Integration with official disaster management bodies (e.g., NDRF) for escalation of unresolved critical requests
 - Automated NGO verification against government registries
