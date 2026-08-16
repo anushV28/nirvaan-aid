@@ -53,6 +53,12 @@
   --color-high: var(--high);
   --color-medium: var(--medium);
   --color-low: var(--low);
+  --color-volunteer: var(--volunteer);
+  --color-group: var(--group);
+  --color-ngo: var(--ngo);
+  --color-sos: var(--sos);
+  --color-safe: var(--safe);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -90,10 +96,16 @@
   --border: oklch(0.88 0.015 245);
   --input: oklch(0.88 0.015 245);
   --ring: oklch(0.46 0.16 252);
-  --critical: oklch(0.55 0.23 27);
-  --high: oklch(0.68 0.19 45);
-  --medium: oklch(0.79 0.16 85);
-  --low: oklch(0.62 0.16 150);
+  --critical: oklch(0.56 0.24 27);
+  --high: oklch(0.7 0.19 52);
+  --medium: oklch(0.85 0.17 95);
+  --low: oklch(0.93 0.11 105);
+  --volunteer: oklch(0.55 0.19 255);
+  --group: oklch(0.6 0.13 195);
+  --ngo: oklch(0.48 0.19 305);
+  --sos: oklch(0.2 0.02 265);
+  --safe: oklch(0.62 0.16 150);
+
   --chart-1: oklch(0.46 0.16 252);
   --chart-2: oklch(0.68 0.19 45);
   --chart-3: oklch(0.62 0.16 150);
