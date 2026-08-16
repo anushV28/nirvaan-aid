@@ -78,6 +78,11 @@ export type Database = {
           org_name: string
           registration_number: string | null
           resources_available: string | null
+          verification_notes: string | null
+          verification_score: number | null
+          verification_status: string
+          verified_at: string | null
+          website: string | null
         }
         Insert: {
           approval_status?: string
@@ -92,6 +97,11 @@ export type Database = {
           org_name: string
           registration_number?: string | null
           resources_available?: string | null
+          verification_notes?: string | null
+          verification_score?: number | null
+          verification_status?: string
+          verified_at?: string | null
+          website?: string | null
         }
         Update: {
           approval_status?: string
@@ -106,6 +116,11 @@ export type Database = {
           org_name?: string
           registration_number?: string | null
           resources_available?: string | null
+          verification_notes?: string | null
+          verification_score?: number | null
+          verification_status?: string
+          verified_at?: string | null
+          website?: string | null
         }
         Relationships: []
       }
@@ -117,6 +132,7 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          is_sos: boolean
           landmark: string | null
           location_lat: number
           location_lng: number
@@ -134,6 +150,7 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          is_sos?: boolean
           landmark?: string | null
           location_lat: number
           location_lng: number
@@ -151,6 +168,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          is_sos?: boolean
           landmark?: string | null
           location_lat?: number
           location_lng?: number
@@ -202,12 +220,63 @@ export type Database = {
         }
         Relationships: []
       }
+      zone_allocations: {
+        Row: {
+          area_name: string
+          category: string
+          center_lat: number
+          center_lng: number
+          created_at: string
+          id: string
+          org_id: string
+          radius_km: number
+          status: string
+          urgency: string
+        }
+        Insert: {
+          area_name: string
+          category?: string
+          center_lat: number
+          center_lng: number
+          created_at?: string
+          id?: string
+          org_id: string
+          radius_km?: number
+          status?: string
+          urgency?: string
+        }
+        Update: {
+          area_name?: string
+          category?: string
+          center_lat?: number
+          center_lng?: number
+          created_at?: string
+          id?: string
+          org_id?: string
+          radius_km?: number
+          status?: string
+          urgency?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zone_allocations_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      km_between: {
+        Args: { lat1: number; lat2: number; lng1: number; lng2: number }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
