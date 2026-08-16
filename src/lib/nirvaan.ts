@@ -14,6 +14,7 @@ export type HelpRequest = {
   category: string;
   urgency: string;
   status: string;
+  is_sos: boolean;
   assigned_responder_id: string | null;
   assigned_responder_type: string | null;
   created_at: string;
@@ -43,8 +44,26 @@ export type Organization = {
   area_of_operation: string | null;
   resources_available: string | null;
   approval_status: string;
+  website: string | null;
+  verification_status: string;
+  verification_score: number | null;
+  verification_notes: string | null;
+  verified_at: string | null;
   location_lat: number;
   location_lng: number;
+  created_at: string;
+};
+
+export type ZoneAllocation = {
+  id: string;
+  org_id: string;
+  area_name: string;
+  center_lat: number;
+  center_lng: number;
+  radius_km: number;
+  category: string;
+  urgency: string;
+  status: string;
   created_at: string;
 };
 
@@ -57,12 +76,26 @@ export const URGENCY_ORDER: Record<string, number> = {
   low: 3,
 };
 
+/** Critical = red, high = orange, medium = yellow, low = pale yellow. */
 export const URGENCY_COLOR: Record<string, string> = {
   critical: "var(--critical)",
   high: "var(--high)",
   medium: "var(--medium)",
   low: "var(--low)",
 };
+
+export const PIN_COLOR = {
+  sos: "var(--sos)",
+  volunteer: "var(--volunteer)",
+  volunteerBusy: "var(--muted-foreground)",
+  group: "var(--group)",
+  ngo: "var(--ngo)",
+} as const;
+
+export function requestPinColor(request: Pick<HelpRequest, "is_sos" | "urgency">): string {
+  if (request.is_sos) return PIN_COLOR.sos;
+  return URGENCY_COLOR[request.urgency] ?? URGENCY_COLOR["medium"]!;
+}
 
 export function distanceKm(
   a: { lat: number; lng: number },
@@ -89,4 +122,30 @@ export function timeAgo(iso: string): string {
   const hours = Math.round(mins / 60);
   if (hours < 24) return `${hours}h ago`;
   return `${Math.round(hours / 24)}d ago`;
+}
+
+/** The single organization responsible for a request's area + category + urgency. */
+export function zoneForRequest(
+  zones: ZoneAllocation[],
+  request: Pick<HelpRequest, "location_lat" | "location_lng" | "category" | "urgency">,
+): ZoneAllocation | null {
+  const matches = zones.filter(
+    (zone) =>
+      zone.status === "active" &&
+      (zone.category === "any" || zone.category === request.category) &&
+      (zone.urgency === "any" || zone.urgency === request.urgency) &&
+      distanceKm(
+        { lat: zone.center_lat, lng: zone.center_lng },
+        { lat: request.location_lat, lng: request.location_lng },
+      ) <= zone.radius_km,
+  );
+  if (matches.length === 0) return null;
+  // Prefer the most specific allocation.
+  return (
+    matches.sort((a, b) => {
+      const specificity = (z: ZoneAllocation) =>
+        (z.category === "any" ? 0 : 1) + (z.urgency === "any" ? 0 : 1);
+      return specificity(b) - specificity(a) || a.radius_km - b.radius_km;
+    })[0] ?? null
+  );
 }
