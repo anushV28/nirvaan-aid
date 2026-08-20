@@ -360,6 +360,77 @@ function RequestPage() {
             />
           </Field>
 
+          <Field label={t("form.photoLabel")} hint={t("form.photoHint")}>
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={(e) => {
+                pickPhoto(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+            <input
+              ref={galleryInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                pickPhoto(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+
+            {photoPreview ? (
+              <div className="overflow-hidden rounded-xl border border-border bg-card">
+                <img
+                  src={photoPreview}
+                  alt={t("form.photoLabel")}
+                  className="max-h-64 w-full object-cover"
+                />
+                <div className="flex items-center justify-between gap-2 bg-secondary px-3 py-2 text-xs">
+                  <span className="truncate font-mono">{photo?.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPhoto(null)}
+                    className="inline-flex items-center gap-1.5 font-semibold text-destructive hover:underline"
+                  >
+                    <X className="size-3.5" aria-hidden="true" />
+                    {t("form.photoRemove")}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-semibold hover:bg-muted"
+                >
+                  <Camera className="size-4" aria-hidden="true" />
+                  {t("form.photoTake")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => galleryInputRef.current?.click()}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-medium hover:bg-muted"
+                >
+                  <ImagePlus className="size-4" aria-hidden="true" />
+                  {t("form.photoChoose")}
+                </button>
+              </div>
+            )}
+
+            {photoWarning ? (
+              <p className="mt-2 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-xs text-foreground">
+                {photoWarning}
+              </p>
+            ) : null}
+          </Field>
+
+
           {error ? (
             <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
               {error}
