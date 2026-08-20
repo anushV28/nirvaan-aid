@@ -233,6 +233,9 @@ function RequestPage() {
                 onClick={() => {
                   setResult(null);
                   setDescription("");
+                  setPhoto(null);
+                  setPhotoWarning(null);
+
                   setLandmark("");
                 }}
                 className="rounded-lg bg-primary px-5 py-2.5 font-semibold text-primary-foreground"
