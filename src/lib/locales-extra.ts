@@ -3,6 +3,17 @@
 export const extraResources = {
   en: {
     translation: {
+      form: {
+        photoLabel: "Photo of your surroundings (optional)",
+        photoHint:
+          "A photo helps responders recognise the location and see conditions on the ground. You can skip this.",
+        photoAdd: "Add a photo",
+        photoTake: "Take a photo",
+        photoChoose: "Choose from device",
+        photoRemove: "Remove photo",
+        photoFailed: "Photo could not be uploaded — your request was still sent.",
+        photoTooLarge: "That image is too large (max 10 MB).",
+      },
       sos: {
         button: "SOS",
         title: "Send an SOS",
@@ -79,6 +90,17 @@ export const extraResources = {
   },
   hi: {
     translation: {
+      form: {
+        photoLabel: "आस-पास की फ़ोटो (वैकल्पिक)",
+        photoHint:
+          "फ़ोटो से रेस्पॉन्डर जगह पहचान पाते हैं और ज़मीनी हालात देख पाते हैं। आप इसे छोड़ भी सकते हैं।",
+        photoAdd: "फ़ोटो जोड़ें",
+        photoTake: "फ़ोटो लें",
+        photoChoose: "डिवाइस से चुनें",
+        photoRemove: "फ़ोटो हटाएँ",
+        photoFailed: "फ़ोटो अपलोड नहीं हो सकी — आपकी विनती फिर भी भेज दी गई है।",
+        photoTooLarge: "यह इमेज बहुत बड़ी है (अधिकतम 10 MB)।",
+      },
       sos: {
         button: "SOS",
         title: "SOS भेजें",
@@ -155,6 +177,17 @@ export const extraResources = {
   },
   gu: {
     translation: {
+      form: {
+        photoLabel: "આસપાસનો ફોટો (વૈકલ્પિક)",
+        photoHint:
+          "ફોટોથી પ્રતિસાદકર્તાઓ સ્થળ ઓળખી શકે છે અને જમીની પરિસ્થિતિ જોઈ શકે છે. તમે આ છોડી શકો છો.",
+        photoAdd: "ફોટો ઉમેરો",
+        photoTake: "ફોટો લો",
+        photoChoose: "ડિવાઇસમાંથી પસંદ કરો",
+        photoRemove: "ફોટો દૂર કરો",
+        photoFailed: "ફોટો અપલોડ થઈ શક્યો નથી — તમારી વિનંતી તો મોકલાઈ ગઈ છે.",
+        photoTooLarge: "આ ઈમેજ ખૂબ મોટી છે (વધુમાં વધુ 10 MB).",
+      },
       sos: {
         button: "SOS",
         title: "SOS મોકલો",
