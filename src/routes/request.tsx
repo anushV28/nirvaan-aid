@@ -221,6 +221,13 @@ function RequestPage() {
 
             <p className="mt-4 text-sm text-muted-foreground">{t("confirm.keepId")}</p>
 
+            {photoWarning ? (
+              <p className="mt-3 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-xs">
+                {photoWarning}
+              </p>
+            ) : null}
+
+
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <button
                 onClick={() => {
