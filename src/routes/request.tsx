@@ -54,6 +54,43 @@ function RequestPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoWarning, setPhotoWarning] = useState<string | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
+  const galleryInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!photo) {
+      setPhotoPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(photo);
+    setPhotoPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photo]);
+
+  const pickPhoto = (file: File | undefined) => {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      setPhotoWarning(t("form.photoTooLarge"));
+      return;
+    }
+    setPhotoWarning(null);
+    setPhoto(file);
+  };
+
+  const uploadPhoto = async (requestId: string) => {
+    if (!photo) return null;
+    const ext = (photo.name.split(".").pop() || "jpg").toLowerCase().slice(0, 5);
+    const path = `${requestId}/${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("request-photos")
+      .upload(path, photo, { contentType: photo.type || "image/jpeg", upsert: false });
+    if (uploadError) throw uploadError;
+    return path;
+  };
+
 
   const relationships = useMemo(
     () => [
