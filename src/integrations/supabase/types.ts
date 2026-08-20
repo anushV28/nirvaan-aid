@@ -136,6 +136,7 @@ export type Database = {
           landmark: string | null
           location_lat: number
           location_lng: number
+          photo_url: string | null
           relationship: string
           reporter_name: string
           reporter_phone: string
@@ -154,6 +155,7 @@ export type Database = {
           landmark?: string | null
           location_lat: number
           location_lng: number
+          photo_url?: string | null
           relationship?: string
           reporter_name: string
           reporter_phone: string
@@ -172,6 +174,7 @@ export type Database = {
           landmark?: string | null
           location_lat?: number
           location_lng?: number
+          photo_url?: string | null
           relationship?: string
           reporter_name?: string
           reporter_phone?: string

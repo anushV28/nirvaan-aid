@@ -1,13 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, CheckCircle2, Crosshair, Loader2, Siren } from "lucide-react";
+import {
+  ArrowLeft,
+  Camera,
+  CheckCircle2,
+  Crosshair,
+  ImagePlus,
+  Loader2,
+  Siren,
+  X,
+} from "lucide-react";
 
 import { Header } from "@/components/Header";
 import { MapView } from "@/components/map/MapView";
 import { supabase } from "@/integrations/supabase/client";
 import { classifyRequest } from "@/lib/classify.functions";
 import { VADODARA } from "@/lib/nirvaan";
+
 
 export const Route = createFileRoute("/request")({
   head: () => ({
@@ -44,6 +54,43 @@ function RequestPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoWarning, setPhotoWarning] = useState<string | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
+  const galleryInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!photo) {
+      setPhotoPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(photo);
+    setPhotoPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photo]);
+
+  const pickPhoto = (file: File | undefined) => {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      setPhotoWarning(t("form.photoTooLarge"));
+      return;
+    }
+    setPhotoWarning(null);
+    setPhoto(file);
+  };
+
+  const uploadPhoto = async (requestId: string) => {
+    if (!photo) return null;
+    const ext = (photo.name.split(".").pop() || "jpg").toLowerCase().slice(0, 5);
+    const path = `${requestId}/${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("request-photos")
+      .upload(path, photo, { contentType: photo.type || "image/jpeg", upsert: false });
+    if (uploadError) throw uploadError;
+    return path;
+  };
+
 
   const relationships = useMemo(
     () => [
@@ -89,6 +136,21 @@ function RequestPage() {
         console.error("classification failed", classifyError);
       }
 
+      let photoPath: string | null = null;
+      if (photo) {
+        try {
+          photoPath = await uploadPhoto(
+            typeof crypto !== "undefined" && crypto.randomUUID
+              ? crypto.randomUUID()
+              : String(Date.now()),
+          );
+          setPhotoWarning(null);
+        } catch (photoError) {
+          console.error("photo upload failed", photoError);
+          setPhotoWarning(t("form.photoFailed"));
+        }
+      }
+
       const { data, error: insertError } = await supabase
         .from("requests")
         .insert({
@@ -102,7 +164,9 @@ function RequestPage() {
           category,
           urgency,
           status: "pending",
+          photo_url: photoPath,
         })
+
         .select("id, category, urgency")
         .single();
 
@@ -157,11 +221,21 @@ function RequestPage() {
 
             <p className="mt-4 text-sm text-muted-foreground">{t("confirm.keepId")}</p>
 
+            {photoWarning ? (
+              <p className="mt-3 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-xs">
+                {photoWarning}
+              </p>
+            ) : null}
+
+
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <button
                 onClick={() => {
                   setResult(null);
                   setDescription("");
+                  setPhoto(null);
+                  setPhotoWarning(null);
+
                   setLandmark("");
                 }}
                 className="rounded-lg bg-primary px-5 py-2.5 font-semibold text-primary-foreground"
@@ -295,6 +369,77 @@ function RequestPage() {
               className="nirvaan-input resize-y"
             />
           </Field>
+
+          <Field label={t("form.photoLabel")} hint={t("form.photoHint")}>
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={(e) => {
+                pickPhoto(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+            <input
+              ref={galleryInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                pickPhoto(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+
+            {photoPreview ? (
+              <div className="overflow-hidden rounded-xl border border-border bg-card">
+                <img
+                  src={photoPreview}
+                  alt={t("form.photoLabel")}
+                  className="max-h-64 w-full object-cover"
+                />
+                <div className="flex items-center justify-between gap-2 bg-secondary px-3 py-2 text-xs">
+                  <span className="truncate font-mono">{photo?.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPhoto(null)}
+                    className="inline-flex items-center gap-1.5 font-semibold text-destructive hover:underline"
+                  >
+                    <X className="size-3.5" aria-hidden="true" />
+                    {t("form.photoRemove")}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-semibold hover:bg-muted"
+                >
+                  <Camera className="size-4" aria-hidden="true" />
+                  {t("form.photoTake")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => galleryInputRef.current?.click()}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-medium hover:bg-muted"
+                >
+                  <ImagePlus className="size-4" aria-hidden="true" />
+                  {t("form.photoChoose")}
+                </button>
+              </div>
+            )}
+
+            {photoWarning ? (
+              <p className="mt-2 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2 text-xs text-foreground">
+                {photoWarning}
+              </p>
+            ) : null}
+          </Field>
+
 
           {error ? (
             <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
