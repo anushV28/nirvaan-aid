@@ -136,6 +136,21 @@ function RequestPage() {
         console.error("classification failed", classifyError);
       }
 
+      let photoPath: string | null = null;
+      if (photo) {
+        try {
+          photoPath = await uploadPhoto(
+            typeof crypto !== "undefined" && crypto.randomUUID
+              ? crypto.randomUUID()
+              : String(Date.now()),
+          );
+          setPhotoWarning(null);
+        } catch (photoError) {
+          console.error("photo upload failed", photoError);
+          setPhotoWarning(t("form.photoFailed"));
+        }
+      }
+
       const { data, error: insertError } = await supabase
         .from("requests")
         .insert({
@@ -149,7 +164,9 @@ function RequestPage() {
           category,
           urgency,
           status: "pending",
+          photo_url: photoPath,
         })
+
         .select("id, category, urgency")
         .single();
 
