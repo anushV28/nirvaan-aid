@@ -1,13 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, CheckCircle2, Crosshair, Loader2, Siren } from "lucide-react";
+import {
+  ArrowLeft,
+  Camera,
+  CheckCircle2,
+  Crosshair,
+  ImagePlus,
+  Loader2,
+  Siren,
+  X,
+} from "lucide-react";
 
 import { Header } from "@/components/Header";
 import { MapView } from "@/components/map/MapView";
 import { supabase } from "@/integrations/supabase/client";
 import { classifyRequest } from "@/lib/classify.functions";
 import { VADODARA } from "@/lib/nirvaan";
+
 
 export const Route = createFileRoute("/request")({
   head: () => ({
