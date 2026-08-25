@@ -16,6 +16,14 @@ export type MapPin = {
 
 export type MapLine = { id: string; from: [number, number]; to: [number, number] };
 
+export type MapCircle = {
+  id: string;
+  center: [number, number];
+  radiusKm: number;
+  color?: string | undefined;
+  label?: string | undefined;
+};
+
 export type LeafletMapProps = {
   center: [number, number];
   zoom?: number | undefined;
