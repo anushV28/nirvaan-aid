@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
-import { MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet";
+import { Circle, MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet";
 
 export type MapPin = {
   id: string;
@@ -16,11 +16,20 @@ export type MapPin = {
 
 export type MapLine = { id: string; from: [number, number]; to: [number, number] };
 
+export type MapCircle = {
+  id: string;
+  center: [number, number];
+  radiusKm: number;
+  color?: string | undefined;
+  label?: string | undefined;
+};
+
 export type LeafletMapProps = {
   center: [number, number];
   zoom?: number | undefined;
   pins?: MapPin[] | undefined;
   lines?: MapLine[] | undefined;
+  circles?: MapCircle[] | undefined;
   draggable?:
     | { lat: number; lng: number; onChange: (lat: number, lng: number) => void }
     | undefined;
@@ -92,6 +101,7 @@ export default function LeafletMap({
   zoom = 12,
   pins = [],
   lines = [],
+  circles = [],
   draggable,
   recenterTo,
   className,
@@ -107,6 +117,19 @@ export default function LeafletMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Recenter to={recenterTo} />
+        {circles.map((circle) => (
+          <Circle
+            key={circle.id}
+            center={circle.center}
+            radius={circle.radiusKm * 1000}
+            pathOptions={{
+              color: circle.color ?? "var(--ngo)",
+              fillColor: circle.color ?? "var(--ngo)",
+              fillOpacity: 0.1,
+              weight: 2,
+            }}
+          />
+        ))}
         <ClickCapture
           onPick={draggable ? (lat, lng) => draggable.onChange(lat, lng) : undefined}
         />
