@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
-import type { HelpRequest, Organization, Volunteer } from "@/lib/nirvaan";
+import type { HelpRequest, Organization, Volunteer, ZoneAllocation } from "@/lib/nirvaan";
 
 const CACHE_KEY = "nirvaan.offline.data.v1";
 
@@ -10,6 +10,7 @@ type Cache = {
   volunteers: Volunteer[];
   organizations: Organization[];
   pendingOrganizations: Organization[];
+  zones: ZoneAllocation[];
 };
 
 function readCache(): Cache | null {
@@ -37,6 +38,7 @@ export function useLiveData(options?: { includePending?: boolean }) {
   const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [pendingOrganizations, setPendingOrganizations] = useState<Organization[]>([]);
+  const [zones, setZones] = useState<ZoneAllocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [offline, setOffline] = useState(false);
 
@@ -51,16 +53,18 @@ export function useLiveData(options?: { includePending?: boolean }) {
       setVolunteers(cached.volunteers ?? []);
       setOrganizations(cached.organizations ?? []);
       setPendingOrganizations(cached.pendingOrganizations ?? []);
+      setZones(cached.zones ?? []);
       pendingCache = cached.pendingOrganizations ?? [];
       setLoading(false);
     }
 
     const load = async () => {
       try {
-        const [req, vol, org] = await Promise.all([
+        const [req, vol, org, zone] = await Promise.all([
           supabase.from("requests").select("*").order("created_at", { ascending: false }),
           supabase.from("volunteers").select("*"),
           supabase.from("organizations").select("*").eq("approval_status", "approved"),
+          supabase.from("zone_allocations").select("*"),
         ]);
         if (!active) return;
         if (req.error || vol.error || org.error) throw req.error ?? vol.error ?? org.error;
@@ -71,6 +75,8 @@ export function useLiveData(options?: { includePending?: boolean }) {
         setRequests(nextRequests);
         setVolunteers(nextVolunteers);
         setOrganizations(nextOrgs);
+        const nextZones = (zone.data ?? []) as ZoneAllocation[];
+        setZones(nextZones);
 
         if (includePending) {
           const pending = await supabase
@@ -88,6 +94,7 @@ export function useLiveData(options?: { includePending?: boolean }) {
           volunteers: nextVolunteers,
           organizations: nextOrgs,
           pendingOrganizations: pendingCache,
+          zones: nextZones,
         });
       } catch {
         if (active) setOffline(true);
@@ -108,6 +115,9 @@ export function useLiveData(options?: { includePending?: boolean }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "organizations" }, () => {
         void load();
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "zone_allocations" }, () => {
+        void load();
+      })
       .subscribe();
 
     const onOnline = () => void load();
@@ -120,5 +130,5 @@ export function useLiveData(options?: { includePending?: boolean }) {
     };
   }, [includePending]);
 
-  return { requests, volunteers, organizations, pendingOrganizations, loading, offline };
+  return { requests, volunteers, organizations, pendingOrganizations, zones, loading, offline };
 }
