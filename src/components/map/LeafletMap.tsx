@@ -117,6 +117,19 @@ export default function LeafletMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Recenter to={recenterTo} />
+        {circles.map((circle) => (
+          <Circle
+            key={circle.id}
+            center={circle.center}
+            radius={circle.radiusKm * 1000}
+            pathOptions={{
+              color: circle.color ?? "var(--ngo)",
+              fillColor: circle.color ?? "var(--ngo)",
+              fillOpacity: 0.1,
+              weight: 2,
+            }}
+          />
+        ))}
         <ClickCapture
           onPick={draggable ? (lat, lng) => draggable.onChange(lat, lng) : undefined}
         />
