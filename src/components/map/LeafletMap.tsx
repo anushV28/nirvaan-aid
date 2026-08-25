@@ -29,6 +29,7 @@ export type LeafletMapProps = {
   zoom?: number | undefined;
   pins?: MapPin[] | undefined;
   lines?: MapLine[] | undefined;
+  circles?: MapCircle[] | undefined;
   draggable?:
     | { lat: number; lng: number; onChange: (lat: number, lng: number) => void }
     | undefined;
