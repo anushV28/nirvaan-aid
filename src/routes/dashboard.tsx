@@ -516,7 +516,7 @@ function orgRows(
   return [
     [t("verify.title"), `${t(`verify.${org.verification_status}`)}${org.verification_score != null ? ` · ${org.verification_score}/100` : ""}`],
     [t("detail.coverage"), coverage || t("detail.none")],
-    [t("map.contact") === "map.contact" ? "Contact" : t("map.contact"), org.contact_person],
+    ["Contact", org.contact_person],
     [t("detail.skills"), org.resources_available ?? t("detail.none")],
   ] as const;
 }
