@@ -5,18 +5,24 @@ import { Phone, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Header } from "@/components/Header";
+import { SosButton } from "@/components/SosButton";
 import { MapView } from "@/components/map/MapView";
-import type { MapLine, MapPin } from "@/components/map/LeafletMap";
+import type { MapCircle, MapLine, MapPin } from "@/components/map/LeafletMap";
 import { useAuth } from "@/hooks/useAuth";
 import { useLiveData } from "@/hooks/useLiveData";
 import { supabase } from "@/integrations/supabase/client";
 import {
+  PIN_COLOR,
   URGENCY_COLOR,
   VADODARA,
   distanceKm,
   formatDistance,
+  requestPinColor,
   timeAgo,
+  zoneForRequest,
   type HelpRequest,
+  type Organization,
+  type Volunteer,
 } from "@/lib/nirvaan";
 
 export const Route = createFileRoute("/dashboard")({
@@ -26,7 +32,7 @@ export const Route = createFileRoute("/dashboard")({
       {
         name: "description",
         content:
-          "Real-time map of open help requests, available volunteers, rescue teams and approved relief organizations.",
+          "Real-time map of open help requests, SOS alerts, available volunteers, rescue teams and approved relief organizations.",
       },
       { property: "og:title", content: "Live response map — Nirvaan" },
       {
@@ -49,14 +55,30 @@ type Responder = {
   distance: number;
 };
 
+type Selection =
+  | { kind: "request"; id: string }
+  | { kind: "volunteer"; id: string }
+  | { kind: "org"; id: string };
+
 function Dashboard() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { requests, volunteers, organizations, loading } = useLiveData();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { requests, volunteers, organizations, zones, loading } = useLiveData();
+  const [selection, setSelection] = useState<Selection | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const selected = requests.find((request) => request.id === selectedId) ?? null;
+  const selected =
+    selection?.kind === "request"
+      ? (requests.find((request) => request.id === selection.id) ?? null)
+      : null;
+  const selectedVolunteer =
+    selection?.kind === "volunteer"
+      ? (volunteers.find((volunteer) => volunteer.id === selection.id) ?? null)
+      : null;
+  const selectedOrg =
+    selection?.kind === "org"
+      ? (organizations.find((org) => org.id === selection.id) ?? null)
+      : null;
 
   const pins = useMemo<MapPin[]>(() => {
     const requestPins: MapPin[] = requests
@@ -66,10 +88,10 @@ function Dashboard() {
         lat: request.location_lat,
         lng: request.location_lng,
         kind: "request",
-        color: URGENCY_COLOR[request.urgency] ?? "var(--medium)",
-        title: request.description.slice(0, 80),
-        pulsing: request.urgency === "critical",
-        onClick: () => setSelectedId(request.id),
+        color: requestPinColor(request),
+        title: `${request.is_sos ? "SOS · " : ""}${request.description.slice(0, 80)}`,
+        pulsing: request.is_sos || request.urgency === "critical",
+        onClick: () => setSelection({ kind: "request", id: request.id }),
       }));
 
     const volunteerPins: MapPin[] = volunteers.map((volunteer) => ({
@@ -77,9 +99,15 @@ function Dashboard() {
       lat: volunteer.location_lat,
       lng: volunteer.location_lng,
       kind: volunteer.signup_type === "group" ? "group" : "volunteer",
-      color: volunteer.status === "available" ? "var(--primary)" : "var(--muted-foreground)",
+      color:
+        volunteer.status !== "available"
+          ? PIN_COLOR.volunteerBusy
+          : volunteer.signup_type === "group"
+            ? PIN_COLOR.group
+            : PIN_COLOR.volunteer,
       badge: volunteer.member_count ? String(volunteer.member_count) : undefined,
       title: `${volunteer.name}${volunteer.member_count ? ` (${volunteer.member_count} ${t("map.members")})` : ""}`,
+      onClick: () => setSelection({ kind: "volunteer", id: volunteer.id }),
     }));
 
     const orgPins: MapPin[] = organizations.map((org) => ({
@@ -87,12 +115,27 @@ function Dashboard() {
       lat: org.location_lat,
       lng: org.location_lng,
       kind: "ngo",
-      color: "oklch(0.45 0.13 300)",
+      color: PIN_COLOR.ngo,
       title: `${org.org_name} — ${org.resources_available ?? ""}`,
+      onClick: () => setSelection({ kind: "org", id: org.id }),
     }));
 
     return [...orgPins, ...volunteerPins, ...requestPins];
   }, [requests, volunteers, organizations, t]);
+
+  const circles = useMemo<MapCircle[]>(
+    () =>
+      zones
+        .filter((zone) => zone.status === "active")
+        .map((zone) => ({
+          id: `z-${zone.id}`,
+          center: [zone.center_lat, zone.center_lng] as [number, number],
+          radiusKm: zone.radius_km,
+          color: PIN_COLOR.ngo,
+          label: zone.area_name,
+        })),
+    [zones],
+  );
 
   const lines = useMemo<MapLine[]>(() => {
     const out: MapLine[] = [];
@@ -110,6 +153,14 @@ function Dashboard() {
     }
     return out;
   }, [requests, volunteers, organizations]);
+
+  const allocatedOrg = useMemo(() => {
+    if (!selected) return null;
+    const zone = zoneForRequest(zones, selected);
+    if (!zone) return null;
+    const org = organizations.find((o) => o.id === zone.org_id) ?? null;
+    return org ? { zone, org } : null;
+  }, [selected, zones, organizations]);
 
   const nearby = useMemo<Responder[]>(() => {
     if (!selected) return [];
@@ -135,19 +186,21 @@ function Dashboard() {
         }),
       }));
 
-    const fromOrgs: Responder[] = organizations.map((org) => ({
-      id: org.id,
-      name: org.org_name,
-      type: "ngo",
-      phone: org.contact_phone,
-      lat: org.location_lat,
-      lng: org.location_lng,
-      detail: org.resources_available ?? org.area_of_operation ?? "",
-      distance: distanceKm(origin, { lat: org.location_lat, lng: org.location_lng }),
-    }));
+    const fromOrgs: Responder[] = organizations
+      .filter((org) => !allocatedOrg || org.id === allocatedOrg.org.id)
+      .map((org) => ({
+        id: org.id,
+        name: org.org_name,
+        type: "ngo" as const,
+        phone: org.contact_phone,
+        lat: org.location_lat,
+        lng: org.location_lng,
+        detail: org.resources_available ?? org.area_of_operation ?? "",
+        distance: distanceKm(origin, { lat: org.location_lat, lng: org.location_lng }),
+      }));
 
     return [...fromVolunteers, ...fromOrgs].sort((a, b) => a.distance - b.distance).slice(0, 12);
-  }, [selected, volunteers, organizations, t]);
+  }, [selected, volunteers, organizations, allocatedOrg, t]);
 
   const assign = async (responder: Responder) => {
     if (!selected) return;
@@ -161,7 +214,7 @@ function Dashboard() {
       .update({
         status: "assigned",
         assigned_responder_id: responder.id,
-        assigned_responder_type: responder.type === "ngo" ? "ngo" : responder.type,
+        assigned_responder_type: responder.type,
       })
       .eq("id", selected.id);
     if (error) toast.error(error.message);
@@ -169,7 +222,7 @@ function Dashboard() {
       await supabase.from("assignments").insert({
         request_id: selected.id,
         responder_id: responder.id,
-        responder_type: responder.type === "ngo" ? "ngo" : responder.type,
+        responder_type: responder.type,
       });
       toast.success(t("map.assigned"));
     }
@@ -193,11 +246,14 @@ function Dashboard() {
     setBusy(false);
   };
 
+  const close = () => setSelection(null);
+
   return (
     <div className="flex h-screen flex-col bg-background">
       <Header />
       <div className="relative flex-1">
-        <MapView center={VADODARA} zoom={12} pins={pins} lines={lines} />
+        <MapView center={VADODARA} zoom={12} pins={pins} lines={lines} circles={circles} />
+        <SosButton />
 
         <div className="pointer-events-none absolute left-4 top-4 z-10 flex flex-col gap-2">
           <div className="pointer-events-auto rounded-lg border border-border bg-card/95 px-3 py-2 text-xs shadow-lg backdrop-blur">
@@ -206,6 +262,10 @@ function Dashboard() {
               {t("map.live")} · {requests.length} {t("map.requests")}
             </p>
             <ul className="space-y-1">
+              <li className="flex items-center gap-2">
+                <span className="size-2.5 rounded-full" style={{ background: PIN_COLOR.sos }} />
+                {t("pins.sos")}
+              </li>
               {(["critical", "high", "medium", "low"] as const).map((level) => (
                 <li key={level} className="flex items-center gap-2">
                   <span
@@ -216,15 +276,19 @@ function Dashboard() {
                 </li>
               ))}
               <li className="flex items-center gap-2 pt-1">
-                <span className="size-2.5 rounded-full bg-primary" />
-                {t("map.volunteers")}
+                <span
+                  className="size-2.5 rounded-full"
+                  style={{ background: PIN_COLOR.volunteer }}
+                />
+                {t("pins.volunteer")}
               </li>
               <li className="flex items-center gap-2">
-                <span
-                  className="size-2.5 rounded-sm"
-                  style={{ background: "oklch(0.45 0.13 300)" }}
-                />
-                {t("map.organizations")}
+                <span className="size-2.5 rounded-full" style={{ background: PIN_COLOR.group }} />
+                {t("pins.group")}
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="size-2.5 rounded-sm" style={{ background: PIN_COLOR.ngo }} />
+                {t("pins.ngo")}
               </li>
             </ul>
           </div>
@@ -240,6 +304,14 @@ function Dashboard() {
             <div className="flex items-start justify-between gap-2 border-b border-border p-4">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
+                  {selected.is_sos ? (
+                    <span
+                      className="rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-white"
+                      style={{ background: PIN_COLOR.sos }}
+                    >
+                      {t("sos.badge")}
+                    </span>
+                  ) : null}
                   <span
                     className="rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-white"
                     style={{ background: URGENCY_COLOR[selected.urgency] }}
@@ -258,7 +330,7 @@ function Dashboard() {
                 </p>
               </div>
               <button
-                onClick={() => setSelectedId(null)}
+                onClick={close}
                 aria-label={t("map.close")}
                 className="rounded-md p-1 hover:bg-muted"
               >
@@ -296,6 +368,22 @@ function Dashboard() {
                 ) : null}
               </dl>
 
+              <div className="rounded-lg border border-border p-3 text-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t("detail.allocatedNgo")}
+                </p>
+                {allocatedOrg ? (
+                  <p className="mt-1 font-semibold">
+                    {allocatedOrg.org.org_name}
+                    <span className="ml-2 text-xs font-normal text-muted-foreground">
+                      {allocatedOrg.zone.area_name} · {allocatedOrg.zone.radius_km} km
+                    </span>
+                  </p>
+                ) : (
+                  <p className="mt-1 text-muted-foreground">{t("detail.noZone")}</p>
+                )}
+              </div>
+
               {selected.status !== "pending" ? (
                 <div className="flex gap-2">
                   <button
@@ -308,7 +396,7 @@ function Dashboard() {
                   <button
                     disabled={busy || selected.status === "resolved"}
                     onClick={() => void setStatus(selected, "resolved")}
-                    className="flex-1 rounded-lg bg-low px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                    className="flex-1 rounded-lg bg-low px-3 py-2 text-sm font-semibold text-foreground disabled:opacity-50"
                   >
                     {t("map.markResolved")}
                   </button>
@@ -332,7 +420,11 @@ function Dashboard() {
                         className="size-2.5 shrink-0 rounded-full"
                         style={{
                           background:
-                            responder.type === "ngo" ? "oklch(0.45 0.13 300)" : "var(--primary)",
+                            responder.type === "ngo"
+                              ? PIN_COLOR.ngo
+                              : responder.type === "group"
+                                ? PIN_COLOR.group
+                                : PIN_COLOR.volunteer,
                         }}
                       />
                       <div className="min-w-0 flex-1">
@@ -358,7 +450,148 @@ function Dashboard() {
             </div>
           </aside>
         ) : null}
+
+        {selectedVolunteer ? (
+          <ResponderPanel
+            title={t("detail.volunteerTitle")}
+            onClose={close}
+            color={
+              selectedVolunteer.signup_type === "group" ? PIN_COLOR.group : PIN_COLOR.volunteer
+            }
+            name={selectedVolunteer.name}
+            phone={selectedVolunteer.contact_phone}
+            rows={volunteerRows(selectedVolunteer, t)}
+            openRequests={requests.filter(
+              (request) =>
+                request.assigned_responder_id === selectedVolunteer.id &&
+                request.status !== "resolved",
+            )}
+            t={t}
+          />
+        ) : null}
+
+        {selectedOrg ? (
+          <ResponderPanel
+            title={t("detail.orgTitle")}
+            onClose={close}
+            color={PIN_COLOR.ngo}
+            name={selectedOrg.org_name}
+            phone={selectedOrg.contact_phone}
+            rows={orgRows(selectedOrg, zones, t)}
+            openRequests={requests.filter(
+              (request) =>
+                request.assigned_responder_id === selectedOrg.id && request.status !== "resolved",
+            )}
+            t={t}
+          />
+        ) : null}
       </div>
     </div>
+  );
+}
+
+type Translate = (key: string) => string;
+
+function volunteerRows(volunteer: Volunteer, t: Translate) {
+  return [
+    [t("detail.skills"), volunteer.skills.join(", ") || t("detail.none")],
+    [
+      t("detail.members"),
+      volunteer.member_count ? String(volunteer.member_count) : t("detail.none"),
+    ],
+    [t("detail.status"), volunteer.status],
+    [t("detail.lastActive"), timeAgo(volunteer.last_active)],
+  ] as const;
+}
+
+function orgRows(
+  org: Organization,
+  zones: { org_id: string; area_name: string; radius_km: number; status: string }[],
+  t: Translate,
+) {
+  const coverage = zones
+    .filter((zone) => zone.org_id === org.id && zone.status === "active")
+    .map((zone) => `${zone.area_name} (${zone.radius_km} km)`)
+    .join(", ");
+  return [
+    [t("verify.title"), `${t(`verify.${org.verification_status}`)}${org.verification_score != null ? ` · ${org.verification_score}/100` : ""}`],
+    [t("detail.coverage"), coverage || t("detail.none")],
+    [t("map.contact") === "map.contact" ? "Contact" : t("map.contact"), org.contact_person],
+    [t("detail.skills"), org.resources_available ?? t("detail.none")],
+  ] as const;
+}
+
+function ResponderPanel({
+  title,
+  name,
+  phone,
+  color,
+  rows,
+  openRequests,
+  onClose,
+  t,
+}: {
+  title: string;
+  name: string;
+  phone: string;
+  color: string;
+  rows: readonly (readonly [string, string])[];
+  openRequests: HelpRequest[];
+  onClose: () => void;
+  t: Translate;
+}) {
+  return (
+    <aside className="absolute right-0 top-0 z-10 flex h-full w-full max-w-md flex-col overflow-y-auto border-l border-border bg-card shadow-2xl sm:w-[26rem]">
+      <div className="flex items-start justify-between gap-2 border-b border-border p-4">
+        <div className="flex items-center gap-3">
+          <span className="size-3 rounded-full" style={{ background: color }} />
+          <div>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{title}</p>
+            <h2 className="font-display text-xl font-bold">{name}</h2>
+          </div>
+        </div>
+        <button onClick={onClose} aria-label={t("map.close")} className="rounded-md p-1 hover:bg-muted">
+          <X className="size-4" aria-hidden="true" />
+        </button>
+      </div>
+
+      <div className="space-y-4 p-4">
+        <a
+          href={`tel:${phone}`}
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
+        >
+          <Phone className="size-4" aria-hidden="true" />
+          {t("detail.call")} {phone}
+        </a>
+
+        <dl className="space-y-2 rounded-lg bg-secondary p-3 text-sm">
+          {rows.map(([label, value]) => (
+            <div key={label} className="flex justify-between gap-3">
+              <dt className="text-muted-foreground">{label}</dt>
+              <dd className="text-right font-medium">{value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div>
+          <h3 className="font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
+            {t("detail.openRequests")}
+          </h3>
+          <ul className="mt-2 space-y-2">
+            {openRequests.length === 0 ? (
+              <li className="text-sm text-muted-foreground">{t("detail.none")}</li>
+            ) : null}
+            {openRequests.map((request) => (
+              <li key={request.id} className="rounded-lg border border-border p-3 text-sm">
+                <p className="font-semibold">{request.description.slice(0, 70)}</p>
+                <p className="text-xs text-muted-foreground">
+                  {t(`status.${request.status}`)} · {timeAgo(request.created_at)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </aside>
   );
 }
