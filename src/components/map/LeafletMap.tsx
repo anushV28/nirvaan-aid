@@ -101,6 +101,7 @@ export default function LeafletMap({
   zoom = 12,
   pins = [],
   lines = [],
+  circles = [],
   draggable,
   recenterTo,
   className,
