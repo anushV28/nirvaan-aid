@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowRight, Building2, HeartHandshake, MapPin, Radio, Siren } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { SosButton } from "@/components/SosButton";
 import "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
@@ -121,6 +122,7 @@ function Index() {
           </Link>
         </section>
       </main>
+      <SosButton />
     </div>
   );
 }
