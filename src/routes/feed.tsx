@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Header } from "@/components/Header";
+import { SosButton } from "@/components/SosButton";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useLiveData } from "@/hooks/useLiveData";
 import { URGENCY_COLOR, URGENCY_ORDER, timeAgo } from "@/lib/nirvaan";
@@ -137,6 +138,7 @@ function Feed() {
           {t("nav.dashboard")} →
         </Link>
       </main>
+      <SosButton />
     </div>
   );
 }

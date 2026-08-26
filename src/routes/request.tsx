@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
+import { SosButton } from "@/components/SosButton";
 import { MapView } from "@/components/map/MapView";
 import { supabase } from "@/integrations/supabase/client";
 import { classifyRequest } from "@/lib/classify.functions";
@@ -463,6 +464,7 @@ function RequestPage() {
           </button>
         </form>
       </main>
+      <SosButton />
     </div>
   );
 }
