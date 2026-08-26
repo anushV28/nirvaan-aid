@@ -69,26 +69,23 @@ function Admin() {
     lng: VADODARA[1],
   });
 
-  const circles = useMemo<MapCircle[]>(
-    () =>
-      zones
-        .filter((zone) => zone.status === "active")
-        .map((zone) => ({
-          id: zone.id,
-          center: [zone.center_lat, zone.center_lng] as [number, number],
-          radiusKm: zone.radius_km,
-          color: PIN_COLOR.ngo,
-        }))
-        .concat([
-          {
-            id: "draft",
-            center: [center.lat, center.lng] as [number, number],
-            radiusKm: radius,
-            color: PIN_COLOR.group,
-          },
-        ]),
-    [zones, center, radius],
-  );
+  const circles = useMemo<MapCircle[]>(() => {
+    const existing: MapCircle[] = zones
+      .filter((zone) => zone.status === "active")
+      .map((zone) => ({
+        id: zone.id,
+        center: [zone.center_lat, zone.center_lng],
+        radiusKm: zone.radius_km,
+        color: PIN_COLOR.ngo as string,
+      }));
+    existing.push({
+      id: "draft",
+      center: [center.lat, center.lng],
+      radiusKm: radius,
+      color: PIN_COLOR.group as string,
+    });
+    return existing;
+  }, [zones, center, radius]);
 
   const decide = async (id: string, status: "approved" | "rejected") => {
     const org = pendingOrganizations.find((item) => item.id === id);
