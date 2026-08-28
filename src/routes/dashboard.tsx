@@ -7,7 +7,9 @@ import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { SosButton } from "@/components/SosButton";
 import { MapView } from "@/components/map/MapView";
+import { ALL_FILTERS, MapLegend, toggleFilter, type PinFilter } from "@/components/map/MapLegend";
 import type { MapCircle, MapLine, MapPin } from "@/components/map/LeafletMap";
+
 import { useAuth } from "@/hooks/useAuth";
 import { useLiveData } from "@/hooks/useLiveData";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,7 +67,9 @@ function Dashboard() {
   const { user } = useAuth();
   const { requests, volunteers, organizations, zones, loading } = useLiveData();
   const [selection, setSelection] = useState<Selection | null>(null);
+  const [filters, setFilters] = useState<PinFilter[]>([...ALL_FILTERS]);
   const [busy, setBusy] = useState(false);
+
 
   const selected =
     selection?.kind === "request"
