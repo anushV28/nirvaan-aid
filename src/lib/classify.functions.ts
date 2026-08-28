@@ -8,6 +8,12 @@ const InputSchema = z.object({
 export const classifyRequest = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }) => {
-    const { classifyDescription } = await import("./classify.server");
-    return await classifyDescription(data.description);
+    try {
+      const { classifyDescription } = await import("./classify.server");
+      return await classifyDescription(data.description);
+    } catch (error) {
+      console.error("classify handler error", error);
+      return { category: "general" as const, urgency: "medium" as const };
+    }
   });
+
