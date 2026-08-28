@@ -81,8 +81,15 @@ function Dashboard() {
       : null;
 
   const pins = useMemo<MapPin[]>(() => {
+    const show = (filter: PinFilter) => filters.includes(filter);
+
     const requestPins: MapPin[] = requests
       .filter((request) => request.status !== "resolved")
+      .filter((request) =>
+        request.is_sos
+          ? show("sos")
+          : show((request.urgency as PinFilter) ?? "medium"),
+      )
       .map((request) => ({
         id: `r-${request.id}`,
         lat: request.location_lat,
@@ -94,34 +101,39 @@ function Dashboard() {
         onClick: () => setSelection({ kind: "request", id: request.id }),
       }));
 
-    const volunteerPins: MapPin[] = volunteers.map((volunteer) => ({
-      id: `v-${volunteer.id}`,
-      lat: volunteer.location_lat,
-      lng: volunteer.location_lng,
-      kind: volunteer.signup_type === "group" ? "group" : "volunteer",
-      color:
-        volunteer.status !== "available"
-          ? PIN_COLOR.volunteerBusy
-          : volunteer.signup_type === "group"
-            ? PIN_COLOR.group
-            : PIN_COLOR.volunteer,
-      badge: volunteer.member_count ? String(volunteer.member_count) : undefined,
-      title: `${volunteer.name}${volunteer.member_count ? ` (${volunteer.member_count} ${t("map.members")})` : ""}`,
-      onClick: () => setSelection({ kind: "volunteer", id: volunteer.id }),
-    }));
+    const volunteerPins: MapPin[] = volunteers
+      .filter((volunteer) => show(volunteer.signup_type === "group" ? "group" : "volunteer"))
+      .map((volunteer) => ({
+        id: `v-${volunteer.id}`,
+        lat: volunteer.location_lat,
+        lng: volunteer.location_lng,
+        kind: volunteer.signup_type === "group" ? "group" : "volunteer",
+        color:
+          volunteer.status !== "available"
+            ? PIN_COLOR.volunteerBusy
+            : volunteer.signup_type === "group"
+              ? PIN_COLOR.group
+              : PIN_COLOR.volunteer,
+        badge: volunteer.member_count ? String(volunteer.member_count) : undefined,
+        title: `${volunteer.name}${volunteer.member_count ? ` (${volunteer.member_count} ${t("map.members")})` : ""}`,
+        onClick: () => setSelection({ kind: "volunteer", id: volunteer.id }),
+      }));
 
-    const orgPins: MapPin[] = organizations.map((org) => ({
-      id: `o-${org.id}`,
-      lat: org.location_lat,
-      lng: org.location_lng,
-      kind: "ngo",
-      color: PIN_COLOR.ngo,
-      title: `${org.org_name} — ${org.resources_available ?? ""}`,
-      onClick: () => setSelection({ kind: "org", id: org.id }),
-    }));
+    const orgPins: MapPin[] = show("ngo")
+      ? organizations.map((org) => ({
+          id: `o-${org.id}`,
+          lat: org.location_lat,
+          lng: org.location_lng,
+          kind: "ngo" as const,
+          color: PIN_COLOR.ngo,
+          title: `${org.org_name} — ${org.resources_available ?? ""}`,
+          onClick: () => setSelection({ kind: "org", id: org.id }),
+        }))
+      : [];
 
     return [...orgPins, ...volunteerPins, ...requestPins];
-  }, [requests, volunteers, organizations, t]);
+  }, [requests, volunteers, organizations, filters, t]);
+
 
   const circles = useMemo<MapCircle[]>(
     () =>
