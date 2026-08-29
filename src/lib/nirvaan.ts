@@ -69,6 +69,16 @@ export type ZoneAllocation = {
 
 export const VADODARA: [number, number] = [22.3072, 73.1812];
 
+/** Geographic middle of Gujarat — default fallback map view. */
+export const GUJARAT: [number, number] = [22.6, 71.5];
+/** Zoom that fits Kutch, the coastline and the southern border. */
+export const GUJARAT_ZOOM = 7;
+
+export function isValidIndianMobile(value: string): boolean {
+  const digits = value.replace(/[\s()-]/g, "");
+  return /^(?:\+?91)?[6-9]\d{9}$/.test(digits);
+}
+
 export const URGENCY_ORDER: Record<string, number> = {
   critical: 0,
   high: 1,
