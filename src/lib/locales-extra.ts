@@ -13,6 +13,9 @@ export const extraResources = {
         photoRemove: "Remove photo",
         photoFailed: "Photo could not be uploaded — your request was still sent.",
         photoTooLarge: "That image is too large (max 10 MB).",
+        phoneInvalid: "Please enter a valid 10-digit mobile number.",
+        manualLocation: "Enter location manually instead",
+        locatingYou: "Finding your location…",
       },
       sos: {
         button: "SOS",
