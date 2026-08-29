@@ -16,7 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   PIN_COLOR,
   URGENCY_COLOR,
-  VADODARA,
+  GUJARAT,
+  GUJARAT_ZOOM,
   distanceKm,
   formatDistance,
   requestPinColor,
@@ -268,7 +269,7 @@ function Dashboard() {
     <div className="flex h-screen flex-col bg-background">
       <Header />
       <div className="relative flex-1">
-        <MapView center={VADODARA} zoom={12} pins={pins} lines={lines} circles={circles} />
+        <MapView center={GUJARAT} zoom={GUJARAT_ZOOM} pins={pins} lines={lines} circles={circles} />
         <SosButton />
 
         <div className="pointer-events-none absolute left-4 top-4 z-10 flex flex-col gap-2">
