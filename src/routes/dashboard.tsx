@@ -272,42 +272,13 @@ function Dashboard() {
         <SosButton />
 
         <div className="pointer-events-none absolute left-4 top-4 z-10 flex flex-col gap-2">
-          <div className="pointer-events-auto rounded-lg border border-border bg-card/95 px-3 py-2 text-xs shadow-lg backdrop-blur">
-            <p className="mb-1.5 flex items-center gap-1.5 font-semibold">
-              <span className="size-2 animate-pulse rounded-full bg-low" />
-              {t("map.live")} · {requests.length} {t("map.requests")}
-            </p>
-            <ul className="space-y-1">
-              <li className="flex items-center gap-2">
-                <span className="size-2.5 rounded-full" style={{ background: PIN_COLOR.sos }} />
-                {t("pins.sos")}
-              </li>
-              {(["critical", "high", "medium", "low"] as const).map((level) => (
-                <li key={level} className="flex items-center gap-2">
-                  <span
-                    className="size-2.5 rounded-full"
-                    style={{ background: URGENCY_COLOR[level] }}
-                  />
-                  {t(`urgency.${level}`)}
-                </li>
-              ))}
-              <li className="flex items-center gap-2 pt-1">
-                <span
-                  className="size-2.5 rounded-full"
-                  style={{ background: PIN_COLOR.volunteer }}
-                />
-                {t("pins.volunteer")}
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="size-2.5 rounded-full" style={{ background: PIN_COLOR.group }} />
-                {t("pins.group")}
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="size-2.5 rounded-sm" style={{ background: PIN_COLOR.ngo }} />
-                {t("pins.ngo")}
-              </li>
-            </ul>
-          </div>
+          <MapLegend
+            active={filters}
+            visibleCount={pins.length}
+            onToggle={(filter) => setFilters((current) => toggleFilter(current, filter))}
+            onReset={() => setFilters([...ALL_FILTERS])}
+          />
+
           {loading ? (
             <div className="pointer-events-auto rounded-lg bg-card px-3 py-2 text-xs shadow">
               Loading…
