@@ -86,6 +86,23 @@ export const extraResources = {
         website: "Website",
         blockedApproval: "Run the authenticity check before approving.",
       },
+      filters: {
+        showAll: "Show all",
+      },
+      track: {
+        title: "Live tracking",
+        subtitle: "This page updates by itself as help moves towards you.",
+        trackingId: "Tracking ID",
+        waitingTitle: "Waiting for a responder",
+        waitingBody:
+          "Your request is visible to every nearby volunteer, rescue team and organization. Keep this page open.",
+        responder: "Assigned responder",
+        yourLocation: "Your location",
+        notFound: "We could not find that request.",
+        backHome: "Back to home",
+        newRequest: "Send another request",
+        loading: "Loading your request…",
+      },
     },
   },
   hi: {
@@ -173,6 +190,23 @@ export const extraResources = {
         website: "वेबसाइट",
         blockedApproval: "मंज़ूरी से पहले प्रामाणिकता जाँच चलाएँ।",
       },
+      filters: {
+        showAll: "सभी दिखाएँ",
+      },
+      track: {
+        title: "लाइव ट्रैकिंग",
+        subtitle: "मदद आपकी ओर बढ़ते ही यह पेज अपने आप अपडेट होता है।",
+        trackingId: "ट्रैकिंग आईडी",
+        waitingTitle: "रेस्पॉन्डर का इंतज़ार",
+        waitingBody:
+          "आपकी विनती आस-पास के सभी स्वयंसेवकों, टीमों और संस्थाओं को दिख रही है। यह पेज खुला रखें।",
+        responder: "सौंपा गया रेस्पॉन्डर",
+        yourLocation: "आपकी लोकेशन",
+        notFound: "यह विनती नहीं मिली।",
+        backHome: "होम पर जाएँ",
+        newRequest: "एक और विनती भेजें",
+        loading: "आपकी विनती लोड हो रही है…",
+      },
     },
   },
   gu: {
@@ -259,6 +293,23 @@ export const extraResources = {
         unverified: "ચકાસાયું નથી",
         website: "વેબસાઇટ",
         blockedApproval: "મંજૂરી પહેલાં પ્રામાણિકતા ચકાસણી ચલાવો.",
+      },
+      filters: {
+        showAll: "બધું બતાવો",
+      },
+      track: {
+        title: "લાઇવ ટ્રેકિંગ",
+        subtitle: "મદદ તમારી તરફ આવે તેમ આ પેજ જાતે અપડેટ થાય છે.",
+        trackingId: "ટ્રેકિંગ આઈડી",
+        waitingTitle: "પ્રતિસાદકર્તાની રાહ",
+        waitingBody:
+          "તમારી વિનંતી નજીકના તમામ સ્વયંસેવકો, ટીમો અને સંસ્થાઓને દેખાય છે. આ પેજ ખુલ્લું રાખો.",
+        responder: "સોંપાયેલ પ્રતિસાદકર્તા",
+        yourLocation: "તમારું સ્થાન",
+        notFound: "એ વિનંતી મળી નથી.",
+        backHome: "હોમ પર જાઓ",
+        newRequest: "બીજી વિનંતી મોકલો",
+        loading: "તમારી વિનંતી લોડ થઈ રહી છે…",
       },
     },
   },
