@@ -13,6 +13,9 @@ export const extraResources = {
         photoRemove: "Remove photo",
         photoFailed: "Photo could not be uploaded — your request was still sent.",
         photoTooLarge: "That image is too large (max 10 MB).",
+        phoneInvalid: "Please enter a valid 10-digit mobile number.",
+        manualLocation: "Enter location manually instead",
+        locatingYou: "Finding your location…",
       },
       sos: {
         button: "SOS",
@@ -117,6 +120,9 @@ export const extraResources = {
         photoRemove: "फ़ोटो हटाएँ",
         photoFailed: "फ़ोटो अपलोड नहीं हो सकी — आपकी विनती फिर भी भेज दी गई है।",
         photoTooLarge: "यह इमेज बहुत बड़ी है (अधिकतम 10 MB)।",
+        phoneInvalid: "कृपया मान्य 10 अंकों का मोबाइल नंबर दर्ज करें।",
+        manualLocation: "इसके बजाय स्थान मैन्युअल रूप से चुनें",
+        locatingYou: "आपका स्थान पता किया जा रहा है…",
       },
       sos: {
         button: "SOS",
@@ -221,6 +227,9 @@ export const extraResources = {
         photoRemove: "ફોટો દૂર કરો",
         photoFailed: "ફોટો અપલોડ થઈ શક્યો નથી — તમારી વિનંતી તો મોકલાઈ ગઈ છે.",
         photoTooLarge: "આ ઈમેજ ખૂબ મોટી છે (વધુમાં વધુ 10 MB).",
+        phoneInvalid: "કૃપા કરીને માન્ય 10-અંકનો મોબાઈલ નંબર દાખલ કરો.",
+        manualLocation: "તેના બદલે સ્થાન જાતે દાખલ કરો",
+        locatingYou: "તમારું સ્થાન શોધી રહ્યા છીએ…",
       },
       sos: {
         button: "SOS",
