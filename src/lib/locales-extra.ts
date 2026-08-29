@@ -117,6 +117,9 @@ export const extraResources = {
         photoRemove: "फ़ोटो हटाएँ",
         photoFailed: "फ़ोटो अपलोड नहीं हो सकी — आपकी विनती फिर भी भेज दी गई है।",
         photoTooLarge: "यह इमेज बहुत बड़ी है (अधिकतम 10 MB)।",
+        phoneInvalid: "कृपया मान्य 10 अंकों का मोबाइल नंबर दर्ज करें।",
+        manualLocation: "इसके बजाय स्थान मैन्युअल रूप से चुनें",
+        locatingYou: "आपका स्थान पता किया जा रहा है…",
       },
       sos: {
         button: "SOS",
