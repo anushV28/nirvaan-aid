@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -44,6 +44,7 @@ type Result = { id: string; category: string; urgency: string };
 
 function RequestPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [relationship, setRelationship] = useState("self");
@@ -172,7 +173,9 @@ function RequestPage() {
         .single();
 
       if (insertError) throw insertError;
-      setResult(data as Result);
+      const created = data as Result;
+      setResult(created);
+      void navigate({ to: "/track/$id", params: { id: created.id } });
     } catch (submitError) {
       console.error(submitError);
       setError(

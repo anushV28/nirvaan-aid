@@ -17,6 +17,7 @@ import { Route as RequestRouteImport } from './routes/request'
 import { Route as AuthAdminRouteImport } from './routes/auth.admin'
 import { Route as AuthNgoRouteImport } from './routes/auth.ngo'
 import { Route as AuthVolunteerRouteImport } from './routes/auth.volunteer'
+import { Route as TrackIdRouteImport } from './routes/track.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const AuthVolunteerRoute = AuthVolunteerRouteImport.update({
   path: '/auth/volunteer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackIdRoute = TrackIdRouteImport.update({
+  id: '/track/$id',
+  path: '/track/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/auth/admin': typeof AuthAdminRoute
   '/auth/ngo': typeof AuthNgoRoute
   '/auth/volunteer': typeof AuthVolunteerRoute
+  '/track/$id': typeof TrackIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/auth/admin': typeof AuthAdminRoute
   '/auth/ngo': typeof AuthNgoRoute
   '/auth/volunteer': typeof AuthVolunteerRoute
+  '/track/$id': typeof TrackIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/auth/admin': typeof AuthAdminRoute
   '/auth/ngo': typeof AuthNgoRoute
   '/auth/volunteer': typeof AuthVolunteerRoute
+  '/track/$id': typeof TrackIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/auth/admin'
     | '/auth/ngo'
     | '/auth/volunteer'
+    | '/track/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/auth/admin'
     | '/auth/ngo'
     | '/auth/volunteer'
+    | '/track/$id'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/auth/admin'
     | '/auth/ngo'
     | '/auth/volunteer'
+    | '/track/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   AuthAdminRoute: typeof AuthAdminRoute
   AuthNgoRoute: typeof AuthNgoRoute
   AuthVolunteerRoute: typeof AuthVolunteerRoute
+  TrackIdRoute: typeof TrackIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVolunteerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/track/$id': {
+      id: '/track/$id'
+      path: '/track/$id'
+      fullPath: '/track/$id'
+      preLoaderRoute: typeof TrackIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthAdminRoute: AuthAdminRoute,
   AuthNgoRoute: AuthNgoRoute,
   AuthVolunteerRoute: AuthVolunteerRoute,
+  TrackIdRoute: TrackIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

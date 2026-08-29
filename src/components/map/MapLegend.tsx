@@ -77,9 +77,9 @@ export function MapLegend({ active, onToggle, onReset, visibleCount }: MapLegend
   );
 
   return (
-    <div className="pointer-events-auto w-52 rounded-lg border border-border bg-card/95 px-3 py-2 text-xs shadow-lg backdrop-blur">
+    <div className="pointer-events-auto w-56 rounded-lg border border-border bg-card/95 px-3 py-2 text-xs shadow-lg backdrop-blur">
       <div className="mb-1.5 flex items-center justify-between gap-2">
-        <p className="flex items-center gap-1.5 font-semibold">
+        <p className="flex items-center gap-1.5 whitespace-nowrap font-semibold">
           <span className="size-2 animate-pulse rounded-full bg-low" />
           {t("map.live")} · {visibleCount} {t("map.requests")}
         </p>
