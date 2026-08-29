@@ -17,7 +17,7 @@ import { SosButton } from "@/components/SosButton";
 import { MapView } from "@/components/map/MapView";
 import { supabase } from "@/integrations/supabase/client";
 import { classifyRequest } from "@/lib/classify.functions";
-import { VADODARA } from "@/lib/nirvaan";
+import { GUJARAT, GUJARAT_ZOOM, isValidIndianMobile } from "@/lib/nirvaan";
 
 
 export const Route = createFileRoute("/request")({
@@ -50,8 +50,11 @@ function RequestPage() {
   const [relationship, setRelationship] = useState("self");
   const [landmark, setLandmark] = useState("");
   const [description, setDescription] = useState("");
-  const [lat, setLat] = useState(VADODARA[0]);
-  const [lng, setLng] = useState(VADODARA[1]);
+  const [lat, setLat] = useState(GUJARAT[0]);
+  const [lng, setLng] = useState(GUJARAT[1]);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [manualLocation, setManualLocation] = useState(false);
+  const [locating, setLocating] = useState(false);
   const [recenter, setRecenter] = useState<[number, number] | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,19 +112,36 @@ function RequestPage() {
   }, [result]);
 
   const useMyLocation = () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setLat(pos.coords.latitude);
-      setLng(pos.coords.longitude);
-      setRecenter([pos.coords.latitude, pos.coords.longitude]);
-    });
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false);
+        setLat(pos.coords.latitude);
+        setLng(pos.coords.longitude);
+        setRecenter([pos.coords.latitude, pos.coords.longitude]);
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 12000 },
+    );
   };
+
+  // Ask for device location on load; silently fall back to the Gujarat view.
+  useEffect(() => {
+    if (manualLocation) return;
+    useMyLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
     if (!name.trim() || !phone.trim() || description.trim().length < 3) {
       setError(t("form.required"));
+      return;
+    }
+    if (!isValidIndianMobile(phone)) {
+      setPhoneError(t("form.phoneInvalid"));
       return;
     }
     setSubmitting(true);
@@ -291,12 +311,33 @@ function RequestPage() {
             <Field label={t("form.reporterPhone")}>
               <input
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  setPhoneError(
+                    e.target.value.trim() === "" || isValidIndianMobile(e.target.value)
+                      ? null
+                      : t("form.phoneInvalid"),
+                  );
+                }}
+                onBlur={(e) =>
+                  setPhoneError(
+                    e.target.value.trim() === "" || isValidIndianMobile(e.target.value)
+                      ? null
+                      : t("form.phoneInvalid"),
+                  )
+                }
                 type="tel"
+                inputMode="tel"
                 maxLength={30}
                 required
-                className="nirvaan-input"
+                aria-invalid={phoneError ? true : undefined}
+                className={`nirvaan-input ${phoneError ? "border-destructive" : ""}`}
               />
+              {phoneError ? (
+                <span className="mt-1 block text-xs font-medium text-destructive">
+                  {phoneError}
+                </span>
+              ) : null}
             </Field>
           </div>
 
@@ -323,8 +364,8 @@ function RequestPage() {
             <div className="overflow-hidden rounded-xl border border-border">
               <div className="h-72">
                 <MapView
-                  center={VADODARA}
-                  zoom={13}
+                  center={GUJARAT}
+                  zoom={GUJARAT_ZOOM}
                   recenterTo={recenter}
                   draggable={{
                     lat,
@@ -346,7 +387,19 @@ function RequestPage() {
                   className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline"
                 >
                   <Crosshair className="size-3.5" aria-hidden="true" />
-                  {t("form.useMyLocation")}
+                  {locating ? t("form.locatingYou") : t("form.useMyLocation")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setManualLocation(true);
+                    setLocating(false);
+                  }}
+                  className={`font-medium text-muted-foreground hover:underline ${
+                    manualLocation ? "opacity-50" : ""
+                  }`}
+                >
+                  {t("form.manualLocation")}
                 </button>
               </div>
             </div>
